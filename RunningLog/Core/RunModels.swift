@@ -59,12 +59,17 @@ public struct RunArchive: Codable {
     public var version = 1
     public var records: [RunRecord]
     public var settings: RunSettings
-    public init(records: [RunRecord], settings: RunSettings) { self.records = records; self.settings = settings }
+    /// 可选字段使旧版 JSON 无需改写即可读取；导出备份时不携带账号绑定信息。
+    public var syncState: RunSyncState?
+    public init(records: [RunRecord], settings: RunSettings, syncState: RunSyncState? = nil) {
+        self.records = records; self.settings = settings; self.syncState = syncState
+    }
     public func validate() throws {
         guard version == 1 else { throw RunError.invalid("此备份版本暂不支持，请使用版本 1 的备份。") }
         guard Set(records.map(\.id)).count == records.count else { throw RunError.invalid("备份包含重复的记录编号。") }
         try settings.validate()
         for record in records { try record.validate() }
+        try syncState?.validate(records: records)
     }
 }
 

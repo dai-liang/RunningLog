@@ -6,6 +6,7 @@ final class RunningLogUITests: XCTestCase {
     func testAddEditAndPersistence() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
+        app.launchEnvironment["RUNNINGLOG_DISABLE_CLOUD_FOR_TESTS"] = "1"
         app.launch()
         app.tabBars.buttons["记录"].tap()
         // 只清理此前失败运行遗留的、带专用前缀的测试记录。
@@ -65,4 +66,30 @@ final class RunningLogUITests: XCTestCase {
         let removed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.buttons["record-" + editedValue])
         XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 5), .completed)
     }
+    /// 未配置开发团队的模拟器构建应给出提示，不能因访问 CloudKit 导致应用崩溃。
+    @MainActor
+    func testCloudSetupMessageAndTogglePersistence() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchEnvironment["RUNNINGLOG_DISABLE_CLOUD_FOR_TESTS"] = "1"
+        app.launch()
+        app.tabBars.buttons["设置"].tap()
+        let toggle = app.switches["iCloudSyncToggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        // 系统开关的可访问性区域包含整行标签，点击右侧开关本体，避开中间留白。
+        if toggle.value as? String == "1" { toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap() }
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        let message = app.staticTexts["cloudSyncMessage"]
+        let setup = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "Xcode"), object: message)
+        XCTAssertEqual(XCTWaiter.wait(for: [setup], timeout: 8), .completed)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "iCloud 配置提示"; screenshot.lifetime = .keepAlways
+        add(screenshot)
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.terminate(); app.launch()
+        app.tabBars.buttons["设置"].tap()
+        XCTAssertTrue(app.switches["iCloudSyncToggle"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.switches["iCloudSyncToggle"].value as? String, "0")
+    }
+
 }

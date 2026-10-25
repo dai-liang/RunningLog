@@ -46,3 +46,18 @@
 ## 验证范围
 
 尚未进行真机签名安装、App Store 发布、iOS 17 实机运行、iPad 界面验收及系统文件选择器导入导出的端到端测试。备份数据结构和校验已通过核心测试；导入导出仍建议在目标真机试用。
+
+## 1.1 iCloud 同步增量验证（2026-10-25）
+
+- iOS Debug 应用及界面测试目标编译成功；Info.plist 中的容器、团队、签名状态均已检查实际构建产物，不只检查工程文本。
+- `swift test`：**21 项通过，0 失败**，其中保留原有 9 项，新增 12 项同步测试。
+- 新增测试覆盖独立设备新增合并、较新编辑获胜、删除防复活、同时间确定性排序、幂等性、交换性、结合性、无效远端数据拒绝、旧备份迁移、同步账号及墓碑持久化、可见记录一致性、同版本异常冲突、时钟回拨及异常元数据。
+- iPhone 18 Pro / iOS 27.0 界面回归：**2 项通过，0 失败**。
+  - 新增 → 整卡点击编辑 → 保存 → 进程重启 → 修改仍保留 → 确认删除。
+  - 开启 iCloud → 显示未配置提示 → 关闭 → 重启 → 开关状态仍为关闭。
+- Debug 界面测试显式设置 `RUNNINGLOG_DISABLE_CLOUD_FOR_TESTS=1`，禁止真实 CloudKit 请求，避免将测试记录传到设备登录的真实账号。该环境开关只在 Debug 生效。
+- 工程、Info.plist 和 entitlements 均通过 `plutil -lint`，源文件通过 `git diff --check`。
+- 完整界面测试结果：`/tmp/RunningLogCloudUIFinal.xcresult`。
+- [iCloud 设置页截图](Screenshots/icloud-settings.png)展示的是未配置签名时的提示，不代表已经上传成功。
+
+真实 iCloud 上传/下载、多设备联网冲突、账号切换、配额限制和 Production Schema 部署尚未实测；须配置属于用户的开发者团队与容器，并按 [ICLOUD_SETUP.md](ICLOUD_SETUP.md) 的双设备流程验收。现有自动化测试不能替代真实云端验收。

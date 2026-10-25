@@ -32,16 +32,35 @@ struct SettingsView: View {
                     }
                 }
                 Section {
+                    Toggle("iCloud 同步", isOn: Binding(get: { store.syncState.enabled }, set: { store.setCloudEnabled($0) }))
+                        .disabled(store.isSyncing).accessibilityIdentifier("iCloudSyncToggle")
+                    HStack(alignment: .top) {
+                        if store.isSyncing { ProgressView().padding(.trailing, 4) }
+                        else { Image(systemName: store.syncFailed ? "exclamationmark.icloud" : "icloud") }
+                        Text(store.syncMessage).font(.subheadline).accessibilityIdentifier("cloudSyncMessage")
+                    }.foregroundStyle(store.syncFailed ? Color.orange : Color.secondary)
+                    if let date = store.syncState.lastSyncedAt {
+                        LabeledContent("最近同步", value: date.formatted(date: .abbreviated, time: .shortened))
+                    }
+                    if store.syncState.enabled {
+                        Button { Task { await store.syncNow() } } label: {
+                            Label("立即同步", systemImage: "arrow.triangle.2.circlepath.icloud")
+                        }.disabled(store.isSyncing).accessibilityIdentifier("syncNow")
+                    }
+                } header: { Text("iCloud") } footer: {
+                    Text("开启后，将跑步记录同步到当前 iCloud 账号的私有空间，包含修改和删除。离线时保留本地记录，联网并打开应用后重试。关闭同步不会删除本机或云端数据；目标和显示偏好仅保存在本机。")
+                }
+                Section {
                     Button { export() } label: { Label("导出 JSON 备份", systemImage: "square.and.arrow.up") }
                     Button { importing = true } label: { Label("导入 JSON 备份", systemImage: "square.and.arrow.down") }
                 } header: { Text("数据与备份") } footer: {
-                    Text("记录仅存储在本机，卸载应用可能丢失数据，请定期导出。导入会合并记录，同编号的记录以备份为准；保留本机设置。")
+                    Text("未开启或尚未完成 iCloud 同步的记录仅保存在本机，请定期导出。导入会合并记录，同编号的记录以备份为准；保留本机设置。")
                 }
                 Section("关于跑步手记") {
                     Label("专注记录，无需账号", systemImage: "lock.shield")
                     LabeledContent("当前记录", value: "\(store.records.count) 次")
-                    LabeledContent("版本", value: "1.0.0")
-                    Text("支持手动补记与修改。暂不包含 GPS 追踪、Apple 健康同步或云同步。").font(.footnote).foregroundStyle(.secondary)
+                    LabeledContent("版本", value: "1.1.0")
+                    Text("支持手动补记、修改和 iCloud 同步。暂不包含 GPS 追踪或 Apple 健康同步。").font(.footnote).foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("设置")

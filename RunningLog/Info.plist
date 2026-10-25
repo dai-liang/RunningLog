@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 自定义键放在源 Info.plist 中，确保构建时展开变量并写入最终应用。 -->
+    <key>RunningLogCloudContainer</key>
+    <string>$(RUNNINGLOG_ICLOUD_CONTAINER)</string>
+    <key>RunningLogCloudSigningTeam</key>
+    <string>$(DEVELOPMENT_TEAM)</string>
+    <key>RunningLogCloudSigningAllowed</key>
+    <string>$(CODE_SIGNING_ALLOWED)</string>
+</dict>
+</plist>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 容器名称与工程的 RUNNINGLOG_ICLOUD_CONTAINER 设置一致，实际使用前需在开发团队中创建。 -->
+    <key>com.apple.developer.icloud-container-identifiers</key>
+    <array><string>$(RUNNINGLOG_ICLOUD_CONTAINER)</string></array>
+    <key>com.apple.developer.icloud-services</key>
+    <array><string>CloudKit</string></array>
+    <key>com.apple.developer.icloud-container-environment</key>
+    <string>$(ICLOUD_ENVIRONMENT)</string>
+</dict>
+</plist>
