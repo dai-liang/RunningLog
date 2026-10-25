@@ -68,3 +68,13 @@ xcodebuild -project RunningLog.xcodeproj -scheme RunningLog \
 界面测试可在 Xcode 通过 Product → Test 执行，覆盖新增、编辑、重启后读取和删除。测试会清理带有专用标记的测试记录。
 
 1.1 新增：[iCloud 设置页预览](Screenshots/icloud-settings.png)（展示未配置签名时的提示）。请先按 [iCloud 配置指南](ICLOUD_SETUP.md) 关联自己的开发者团队与容器，再开启真实同步。
+
+## 应用图标
+
+已配置青绿色跑道与荧光绿跑者图标，适配 iOS 主屏幕与 App Store。资源为 1024 × 1024 的无透明通道 PNG；系统负责应用圆角裁切。
+
+- [图标预览](RunningLog/Assets.xcassets/AppIcon.appiconset/AppIcon-Running.png)
+- [设计说明与生成提示词](Design/APP_ICON.md)
+- [图标格式规范化脚本](Scripts/prepare_app_icon.swift)
+
+在 Xcode 重新运行应用即可安装新图标；若仍显示旧缓存，可执行 Product → Clean Build Folder 后再次运行，无需删除应用数据。

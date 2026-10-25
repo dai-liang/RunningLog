@@ -61,3 +61,12 @@
 - [iCloud 设置页截图](Screenshots/icloud-settings.png)展示的是未配置签名时的提示，不代表已经上传成功。
 
 真实 iCloud 上传/下载、多设备联网冲突、账号切换、配额限制和 Production Schema 部署尚未实测；须配置属于用户的开发者团队与容器，并按 [ICLOUD_SETUP.md](ICLOUD_SETUP.md) 的双设备流程验收。现有自动化测试不能替代真实云端验收。
+
+## 应用图标验证（2026-10-25）
+
+- 修复此前几乎全黑的图标，使用内置 ImageGen 生成青绿色跑道与荧光绿跑者图标。
+- 最终资源：`RunningLog/Assets.xcassets/AppIcon.appiconset/AppIcon-Running.png`。
+- 检查实际 PNG：1024 × 1024、无 Alpha 通道；未预绘制外部圆角。
+- 图标资源目录编译成功（`BUILD SUCCEEDED`），无图标资源警告。
+- 已目视检查实际打包的 `AppIcon60x60@2x.png`（120 × 120），确认跑者与跑道显示正常，不再是黑色图片。
+- 本次仅新增图像资源及转换脚本，不涉及业务逻辑，未重复执行业务测试。
